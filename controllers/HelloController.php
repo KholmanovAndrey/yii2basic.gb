@@ -13,6 +13,9 @@ class HelloController
 {
     public function actionWorld()
     {
+        $session = Yii::$app->session;
+        $session->set('prev_page', $_SERVER['HTTP_REFERER']);
+
         return $this->render('world');
     }
 }

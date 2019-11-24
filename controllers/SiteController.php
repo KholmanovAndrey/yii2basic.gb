@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use Yii;
 use yii\filters\AccessControl;
+use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\Response;
 use yii\filters\VerbFilter;
@@ -61,6 +62,9 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
+        $session = Yii::$app->session;
+        $session->set('prev_page', $_SERVER['HTTP_REFERER']);
+
         return $this->render('index');
     }
 
@@ -71,6 +75,9 @@ class SiteController extends Controller
      */
     public function actionLogin()
     {
+        $session = Yii::$app->session;
+        $session->set('prev_page', $_SERVER['HTTP_REFERER']);
+
         if (!Yii::$app->user->isGuest) {
             return $this->goHome();
         }
@@ -105,6 +112,9 @@ class SiteController extends Controller
      */
     public function actionContact()
     {
+        $session = Yii::$app->session;
+        $session->set('prev_page', $_SERVER['HTTP_REFERER']);
+
         $model = new ContactForm();
         if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
             Yii::$app->session->setFlash('contactFormSubmitted');
@@ -123,6 +133,9 @@ class SiteController extends Controller
      */
     public function actionAbout()
     {
+        $session = Yii::$app->session;
+        $session->set('prev_page', $_SERVER['HTTP_REFERER']);
+
         return $this->render('about');
     }
 }
