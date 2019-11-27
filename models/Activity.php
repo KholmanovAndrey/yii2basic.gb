@@ -13,7 +13,7 @@ use yii\base\Model;
 class Activity extends Model
 {
     public $cycle;
-    public $main; // 0 - блокируем, 1 - не блокируем
+    public $isBlocked; // 0 - блокируем, 1 - не блокируем
 
     public function day($cycle, $main)
     {
