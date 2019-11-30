@@ -8,8 +8,7 @@
 
 namespace app\controllers;
 
-use app\models\TaskForm;
-use yii\helpers\Url;
+use app\models\Activity;
 use yii\web\Controller;
 
 class TaskController extends Controller
@@ -27,11 +26,14 @@ class TaskController extends Controller
         }
 
         // вместо данных из базы
-        $task = new TaskForm();
+        $task = new Activity();
         $task->id = $id;
         $task->name = 'Job';
-        $task->date = '2019-11-27 08:00';
-        $task->text = 'Go';
+        $task->started_at = '2019-11-27 08:00';
+        $task->finished_at = '2019-11-27 08:00';
+        $task->content = 'Go';
+        $task->cycle = 0;
+        $task->main = 0;
 
         return $this->render('index', compact('task'));
     }
@@ -43,12 +45,10 @@ class TaskController extends Controller
      */
     public function actionEdit($id)
     {
-        $task = new TaskForm();
-        if (\Yii::$app->request->isPost) {
-            if ($task->load(\Yii::$app->request->post())) {
-                if ($task->validate()) {
-                    return $this->render('submit', compact('task'));
-                }
+        $task = new Activity();
+        if ($task->load(\Yii::$app->request->post())) {
+            if ($task->validate()) {
+                return $this->render('submit', compact('task'));
             }
         }
 
@@ -60,8 +60,11 @@ class TaskController extends Controller
         // вместо данных из базы
         $task->id = $id;
         $task->name = 'Job';
-        $task->date = '2019-11-27 08:00';
-        $task->text = 'Go';
+        $task->started_at = '2019-11-27 08:00';
+        $task->finished_at = '2019-11-27 08:00';
+        $task->content = 'Go';
+        $task->cycle = 0;
+        $task->main = 0;
 
         return $this->render('edit', compact('task'));
     }
