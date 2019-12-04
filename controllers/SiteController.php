@@ -2,6 +2,8 @@
 
 namespace app\controllers;
 
+use app\models\SignupForm;
+use app\models\User;
 use Yii;
 use yii\filters\AccessControl;
 use yii\helpers\Url;
@@ -137,5 +139,38 @@ class SiteController extends Controller
         $session->set('prev_page', $_SERVER['HTTP_REFERER']);
 
         return $this->render('about');
+    }
+
+    public function actionSignup()
+    {
+        $model = new SignupForm();
+
+        if ($model->load(Yii::$app->request->post())) {
+            if ($user = $model->signup()) {
+                if (Yii::$app->getUser()->login($user)) {
+                    return $this->goHome();
+                }
+            }
+        }
+
+        return $this->render('signup', [
+            'model' => $model,
+        ]);
+    }
+
+    public function actionAddAdmin() {
+        $user = User::find()->where(['username' => 'admin'])->one();
+        if (empty($user)) {
+            $user = new User();
+            $user->username = 'admin';
+            $user->email = 'admin@gb.ru';
+            $user->setPassword('admin');
+            $user->generateAuthKey();
+            if ($user->save()) {
+                echo 'good';
+            }
+        }
+        $adminRole = Yii::$app->authManager->getRole('admin');
+        Yii::$app->authManager->assign($adminRole, $user->id);
     }
 }

@@ -43,29 +43,44 @@ class TaskController extends Controller
      * @param $id - идентификатор задачи
      * @return string
      */
-    public function actionEdit($id)
+    public function actionEdit()
     {
-        $task = new Activity();
+        $id = \Yii::$app->request->get('id');
+
+        $task = $this->findTask($id);
         if ($task->load(\Yii::$app->request->post())) {
             if ($task->validate()) {
-                return $this->render('submit', compact('task'));
+                // проверка на пустое поле finished_at
+                if (!$task->finished_at) {
+                    $task->finished_at = $task->started_at;
+                }
+                // проверка finished_at не может бы быть меньше started_at
+                if ($task->started_at > $task->finished_at) {
+                    $task->finished_at = $task->started_at;
+                }
+
+                $task->user_id = \Yii::$app->user->id;
+                if ($task->id) {
+                    $task->updated_at = date('Y-m-d');
+                } else {
+                    $task->created_at = date('Y-m-d');
+                }
+
+                if ($task->save()) {
+                    return $this->render('submit', compact('task'));
+                }
             }
         }
 
-        // если ID нет, ошибка
-        if (!$id) {
-            return $this->redirect('site/error');
+        return $this->render('edit', compact('task'));
+    }
+
+    public function findTask($id)
+    {
+        if ($id) {
+            return Activity::findOne($id);
         }
 
-        // вместо данных из базы
-        $task->id = $id;
-        $task->name = 'Job';
-        $task->started_at = '2019-11-27 08:00';
-        $task->finished_at = '2019-11-27 08:00';
-        $task->content = 'Go';
-        $task->cycle = 0;
-        $task->main = 0;
-
-        return $this->render('edit', compact('task'));
+        return new Activity();
     }
 }

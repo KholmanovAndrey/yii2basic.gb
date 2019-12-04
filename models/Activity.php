@@ -8,25 +8,14 @@
 
 namespace app\models;
 
-use yii\base\Model;
+use yii\db\ActiveRecord;
 
-class Activity extends Model
+class Activity extends ActiveRecord
 {
-    public $id;
-    public $user_id;
-    public $name;
-    public $content;
-    public $cycle;
-    public $main; // 0 - блокируем, 1 - не блокируем
-    public $started_at;
-    public $finished_at;
-    public $created_at;
-    public $updated_at;
-
     public function rules()
     {
         return [
-            [['name', 'content', 'started_at', 'finished_at'], 'required'],
+            [['name', 'content', 'started_at'], 'required'],
             [['user_id', 'cycle', 'main'], 'integer'],
             [['started_at', 'finished_at', 'created_at', 'updated_at'], 'safe'],
             [['content'], 'string'],
