@@ -1,41 +1,74 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Kholmanov
- * Date: 24.11.2019
- * Time: 18:36
- */
 
 namespace app\models;
 
-use yii\db\ActiveRecord;
+use Yii;
 
-class Activity extends ActiveRecord
+/**
+ * This is the model class for table "activity".
+ *
+ * @property int $id
+ * @property int|null $user_id
+ * @property string $name
+ * @property string|null $started_at
+ * @property string|null $finished_at
+ * @property string|null $created_at
+ * @property string|null $updated_at
+ * @property string|null $content
+ * @property int|null $cycle
+ * @property int|null $main
+ *
+ * @property User $user
+ */
+class Activity extends \yii\db\ActiveRecord
 {
+    /**
+     * {@inheritdoc}
+     */
+    public static function tableName()
+    {
+        return 'activity';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function rules()
     {
         return [
-            [['name', 'content', 'started_at'], 'required'],
             [['user_id', 'cycle', 'main'], 'integer'],
+            [['name'], 'required'],
             [['started_at', 'finished_at', 'created_at', 'updated_at'], 'safe'],
             [['content'], 'string'],
             [['name'], 'string', 'max' => 255],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function attributeLabels()
     {
         return [
             'id' => 'ID',
             'user_id' => 'User ID',
-            'name' => 'Название',
-            'started_at' => 'Время начала задачи',
-            'finished_at' => 'Время завершения задачи',
-            'created_at' => 'Время создания задачи',
-            'updated_at' => 'Время обновления задачи',
-            'content' => 'Описание',
-            'cycle' => 'Цикличность',
-            'main' => 'Главная задача',
+            'name' => 'Name',
+            'started_at' => 'Started At',
+            'finished_at' => 'Finished At',
+            'created_at' => 'Created At',
+            'updated_at' => 'Updated At',
+            'content' => 'Content',
+            'cycle' => 'Cycle',
+            'main' => 'Main',
         ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUser()
+    {
+        return $this->hasOne(User::className(), ['id' => 'user_id']);
     }
 }
