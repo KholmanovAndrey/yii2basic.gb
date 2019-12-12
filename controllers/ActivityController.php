@@ -44,6 +44,17 @@ class ActivityController extends Controller
         ]);
     }
 
+    public function actionPersonal()
+    {
+        $searchModel = new ActivitySearch();
+        $dataProvider = $searchModel->searchPersonal(Yii::$app->request->queryParams);
+
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
     /**
      * Displays a single Activity model.
      * @param integer $id

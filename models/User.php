@@ -2,9 +2,12 @@
 
 namespace app\models;
 
+use app\components\behaviors\CacheBehaviors;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveRecord;
+use yii\web\IdentityInterface;
 
 /**
  * This is the model class for table "users".
@@ -21,7 +24,7 @@ use yii\behaviors\TimestampBehavior;
  *
  * @property Activity[] $activities
  */
-class User extends \yii\db\ActiveRecord
+class User extends ActiveRecord implements IdentityInterface
 {
     const STATUS_DELETED = 0;
     const STATUS_ACTIVE = 10;
@@ -47,7 +50,10 @@ class User extends \yii\db\ActiveRecord
                 'updatedAtAttribute' => 'updated_at',
                 'value' => time(),
             ],
-
+            CacheBehaviors::class => [
+                'class' => CacheBehaviors::class,
+                'cacheKey' => self::tableName()
+            ],
         ];
     }
 
@@ -173,5 +179,16 @@ class User extends \yii\db\ActiveRecord
     public function generateAuthKey()
     {
         $this->auth_key = Yii::$app->security->generateRandomString();
+    }
+
+    public static function findOne($condition)
+    {
+        if (Yii::$app->cache->exists(self::tableName() . '_' . $condition) === false) {
+            $result = parent::findOne($condition);
+            Yii::$app->cache->set(self::tableName() . '_' . $condition, $result);
+            return $result;
+        } else {
+            return Yii::$app->cache->get(self::tableName() . '_' . $condition);
+        }
     }
 }

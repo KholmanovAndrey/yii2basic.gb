@@ -57,6 +57,15 @@ class UserController extends Controller
         ]);
     }
 
+
+    public function actionProfile()
+    {
+        return $this->render('profile', [
+            'model' => $this->findModel(Yii::$app->user->id),
+        ]);
+    }
+
+
     /**
      * Creates a new User model.
      * If creation is successful, the browser will be redirected to the 'view' page.
